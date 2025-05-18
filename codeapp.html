@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima Impactante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-primary: 'Inter', sans-serif;
+            --text-light: #f0f4f8;
+            --text-medium: #cbd5e1;
+            --text-dark: #334155;
+            --accent-color: #3b82f6; /* Un azul vibrante */
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --card-border: rgba(255, 255, 255, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            overflow: hidden; /* Evita scrollbars por el gradiente grande */
+
+            /* Fondo con degradado animado tipo cielo */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #9b59b6, #3498db);
+            background-size: 400% 400%;
+            animation: gradientBG 25s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .weather-app-container {
+            width: 100%;
+            max-width: 420px; /* Un poco más ancho para un look premium */
+            padding: 20px;
+        }
+
+        .weather-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%); /* Para Safari */
+            border-radius: 24px; /* Esquinas más redondeadas */
+            border: 1px solid var(--card-border);
+            padding: 32px; /* Más padding interno */
+            box-shadow: 0 10px 30px var(--shadow-color);
+            text-align: center;
+            transition: all 0.3s ease-out;
+        }
+
+        .weather-card h1 {
+            font-size: 1.8rem; /* Un poco más pequeño para dar espacio */
+            font-weight: 600;
+            margin-bottom: 28px;
+            color: var(--text-light);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid var(--card-border);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--text-light);
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+        }
+
+        .input-group input[type="text"]::placeholder {
+            color: var(--text-medium);
+            opacity: 0.7;
+        }
+
+        .input-group input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        button#getWeatherBtn {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: var(--font-primary);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        button#getWeatherBtn:hover {
+            background-color: #2563eb; /* Azul un poco más oscuro */
+            transform: translateY(-2px);
+        }
+        button#getWeatherBtn:active {
+            transform: translateY(0px);
+        }
+
+
+        .weather-result {
+            margin-top: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            min-height: 220px; /* Para evitar saltos de layout */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weather-result.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .weather-icon {
+            width: 120px; /* Iconos grandes */
+            height: 120px;
+            margin-bottom: 10px;
+            transition: transform 0.5s ease;
+        }
+        .weather-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+        }
+
+        .city-name {
+            font-size: 2rem; /* Más grande */
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-light);
+        }
+
+        .temperature {
+            font-size: 3.5rem; /* Mucho más grande */
+            font-weight: 300; /* Más ligero para estilo Apple */
+            margin-bottom: 4px;
+            color: var(--text-light);
+            line-height: 1;
+        }
+        .temperature sup {
+            font-size: 1.8rem;
+            font-weight: 500;
+            vertical-align: super;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-medium);
+            text-transform: capitalize;
+        }
+        
+        .error-message {
+            color: #f87171; /* Rojo suave para errores */
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: var(--text-light);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none; /* Oculto por defecto */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="weather-app-container">
+        <div class="weather-card">
+            <h1>Consulta el Clima</h1>
+            <form id="weatherForm">
+                <div class="input-group">
+                    <input type="text" id="cityInput" placeholder="Escribe una ciudad..." required>
+                </div>
+                <button type="submit" id="getWeatherBtn">Mostrar Clima</button>
+            </form>
+
+            <div class="loader" id="loader"></div>
+            <div id="errorMessage" class="error-message"></div>
+
+            <div class="weather-result" id="weatherResult">
+                <div class="weather-icon" id="weatherIconContainer">
+                    <!-- El SVG del icono se insertará aquí -->
+                </div>
+                <h2 class="city-name" id="cityName"></h2>
+                <p class="temperature" id="temperatureValue"></p>
+                <p class="description" id="weatherDescription"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const weatherForm = document.getElementById('weatherForm');
+        const cityInput = document.getElementById('cityInput');
+        const weatherResultDiv = document.getElementById('weatherResult');
+        const cityNameEl = document.getElementById('cityName');
+        const temperatureEl = document.getElementById('temperatureValue');
+        const descriptionEl = document.getElementById('weatherDescription');
+        const iconContainerEl = document.getElementById('weatherIconContainer');
+        const loaderEl = document.getElementById('loader');
+        const errorMessageEl = document.getElementById('errorMessage');
+
+        // Iconos SVG (simplificados para el ejemplo)
+        const weatherIcons = {
+            "01d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="12" fill="#FFD700"/><path d="M32 8V12M32 52V56M8 32H12M52 32H56M13.636 13.636L16.464 16.464M47.536 47.536L50.364 50.364M13.636 50.364L16.464 47.536M47.536 16.464L50.364 13.636" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/></svg>`, // Soleado
+            "01n": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.5 46.3A16 16 0 1140.7 18a12 12 0 00-19.4 12.1 16 16 0 0123.2 16.2z" fill="#B0C4DE"/><path d="M20 22a1 1 0 011-1h.01a1 1 0 110 2H21a1 1 0 01-1-1zm5 5a1 1 0 011-1h.01a1 1 0 110 2H26a1 1 0 01-1-1zm-3 7a1 1 0 011-1h.01a1 1 0 110 2H23a1 1 0 01-1-1z" fill="#FFFACD" opacity="0.7"/></svg>`, // Luna clara
+            "02d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48 40A16 16 0 0032 24H28a12 12 0 100 24h20a8 8 0 000-16 8 8 0 00-4 0" fill="#E6E6FA"/><path d="M32 12V16M8 32H12M13.636 13.636L16.464 16.464" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.8"/><circle cx="30" cy="18" r="8" fill="#FFD700" opacity="0.8"/></svg>`, // Parcialmente Nublado (Día)
+            "02n": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.5 46.3A16 16 0 1140.7 18a12 12 0 00-19.4 12.1 16 16 0 0123.2 16.2z" fill="#B0C4DE"/><path d="M52 44a12 12 0 00-12-12h-2a16 16 0 11-2.1-31.8 16 16 0 0116.1 15.8 12 12 0 000 24z" fill="#D3D3D3" opacity="0.7"/></svg>`, // Parcialmente Nublado (Noche)
+            "03d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48 40a16 16 0 10-32 0h-4a12 12 0 110-24h4a16 16 0 0132 0h4a12 12 0 110 24h-4z" fill="#D3D3D3"/></svg>`, // Nublado
+            "04d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40 24a16 16 0 00-32 0H4a12 12 0 010 24h4a16 16 0 0032 0h4a12 12 0 000-24h-4zm8 16a8 8 0 10-16 0H16a4 4 0 010-8h16a8 8 0 0016 0h4a4 4 0 010 8h-4z" fill="#A9A9A9"/></svg>`, // Muy Nublado
+            "09d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48 36a16 16 0 10-32 0H12a12 12 0 010-24h4a16 16 0 0132 0h4a12 12 0 010 24h-4zM24 52v4M32 54v4M40 52v4" fill="#B0C4DE" opacity="0.7"/><path d="M24 52l-2 4h2zm8 2l-2 4h2zm8-2l-2 4h2z" stroke="#4682B4" stroke-width="2" stroke-linecap="round"/></svg>`, // Lluvia
+            "10d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48 32a16 16 0 00-32 0H12a12 12 0 000 24h36a12 12 0 000-24h-4zm-20 20l-2 4M36 52l-2 4" fill="#B0C4DE" opacity="0.8"/><circle cx="28" cy="22" r="6" fill="#FFD700" opacity="0.7"/><path d="M28 52l-2 4h2zm8 0l-2 4h2z" stroke="#4682B4" stroke-width="2" stroke-linecap="round"/></svg>`, // Lluvia con Sol
+            "11d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40 24a16 16 0 00-32 0H4a12 12 0 010 24h4a16 16 0 0032 0h4a12 12 0 000-24h-4z" fill="#778899"/><path d="M32 40l-6 10h4l-2 8 10-12h-6l4-6z" fill="#FFD700"/></svg>`, // Tormenta
+            "13d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40 28a16 16 0 00-32 0H4a12 12 0 010 24h4a16 16 0 0032 0h4a12 12 0 000-24h-4zM20 48l2-2m8 0l2-2m-6 6l2-2m-10-2l2-2m16-2l2-2m-6 6l2-2M32 42l2-2m8 0l2-2" fill="#E0FFFF" opacity="0.7"/><g stroke="#ADD8E6" stroke-width="2" stroke-linecap="round"><path d="M22 46l-2 2m12-2l-2 2m-4-4l-2 2m12-2l-2 2m-4-4l-2 2"/></g></svg>`, // Nieve
+            "50d": `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke="#B0C4DE" stroke-width="4" stroke-linecap="round"><path d="M8 24H56M8 32H56M8 40H40M8 48H48"/></g></svg>`, // Niebla
+            // Añade iconos 'n' (noche) si es necesario para mayor precisión, o usa los 'd' (día) como fallback.
+        };
+        // Usaremos los 'd' como fallback para las versiones 'n' si no existen explícitamente.
+        Object.keys(weatherIcons).forEach(key => {
+            if (key.endsWith('n') && !weatherIcons[key]) {
+                const dayVersion = key.slice(0, -1) + 'd';
+                if (weatherIcons[dayVersion]) {
+                    weatherIcons[key] = weatherIcons[dayVersion]; // Copia el icono de día para la noche
+                }
+            }
+        });
+
+
+        weatherForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const city = cityInput.value.trim();
+            if (!city) return;
+
+            weatherResultDiv.classList.remove('visible');
+            loaderEl.style.display = 'block';
+            errorMessageEl.textContent = '';
+            iconContainerEl.innerHTML = ''; // Limpiar icono anterior
+
+            // --- SIMULACIÓN DE LLAMADA A API ---
+            // En una app real, aquí harías fetch a OpenWeatherMap u otra API
+            // const API_KEY = 'TU_API_KEY';
+            // const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=es`;
+            
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simular delay de red
+
+            // Mock Data
+            const mockResponses = [
+                { success: true, data: { name: city, main: { temp: 21.5 }, weather: [{ description: "soleado", icon: "01d" }] } },
+                { success: true, data: { name: city, main: { temp: 15.2 }, weather: [{ description: "parcialmente nublado", icon: "02d" }] } },
+                { success: true, data: { name: city, main: { temp: 12.8 }, weather: [{ description: "lluvia ligera", icon: "10d" }] } },
+                { success: true, data: { name: city, main: { temp: 28.0 }, weather: [{ description: "cielo claro", icon: "01n" }] } }, // Ejemplo noche
+                { success: true, data: { name: city, main: { temp: 8.1 }, weather: [{ description: "nieve ligera", icon: "13d" }] } },
+                { success: true, data: { name: city, main: { temp: 18.6 }, weather: [{ description: "niebla", icon: "50d" }] } },
+                { success: true, data: { name: city, main: { temp: 22.3 }, weather: [{ description: "tormenta", icon: "11d" }] } },
+                { success: false, message: "Ciudad no encontrada. Intenta con otra." }
+            ];
+            const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+            // Forzar un nombre de ciudad consistente para la demo si es exitoso
+            if (randomResponse.success) randomResponse.data.name = city;
+
+
+            loaderEl.style.display = 'none';
+
+            if (randomResponse.success) {
+                const data = randomResponse.data;
+                cityNameEl.textContent = data.name;
+                temperatureEl.innerHTML = `${Math.round(data.main.temp)}<sup>°C</sup>`;
+                descriptionEl.textContent = data.weather[0].description;
+                
+                const iconCode = data.weather[0].icon;
+                iconContainerEl.innerHTML = weatherIcons[iconCode] || weatherIcons["01d"]; // Fallback a soleado
+
+                weatherResultDiv.classList.add('visible');
+            } else {
+                errorMessageEl.textContent = randomResponse.message;
+            }
+            cityInput.value = ''; // Limpiar input
+        });
+    </script>
+
+</body>
+</html>
