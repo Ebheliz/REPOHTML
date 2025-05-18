@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Coche Futurista 3D</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            z-index: 100;
+        }
+        #turboIndicator {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.5);
+            color: #0ff;
+            border: 1px solid #0ff;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            display: none; /* Se mostrará con JS */
+        }
+    </style>
+</head>
+<body>
+    <div id="info">Controles: W/S - Acelerar/Frenar | A/D - Girar | Shift - Turbo</div>
+    <div id="turboIndicator">TURBO ACTIVO!</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        let scene, camera, renderer, car;
+        let clock = new THREE.Clock();
+
+        // Textura de asfalto en Base64 (textura simple y repetible)
+        // Esta es una textura genérica. Para una mejor apariencia, podrías usar una más detallada.
+        const asphaltTextureBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIYSURBVHhe7Zq/bhRBEIb/CSLDBhEk2nBRKRIkNEgREUgoKSIOEpKgoSAkoCAkUChILKi0iY2UJoogknChQCwM+wX2X+wse+PZnXO7M9vlzZnsznf3/t2d3QGgUCgUCoVCoVAoFAqFPkOa9/a9Pnu/S9/c9uS79K1d9j5H/zNnb7P3OfpHzJ73wzP0V83b7D1d/yFz3w9f0l8y913bPf0fM+dd/2u9n/XvMvX1H+vP8P/L3NPT7D1Z/+P7R0f8b3H/19N92PqN0z69b+sHpv12V/dGpv1mS/e9/b/W0r2n63/qWbsF/UfM58l36XsyzT70/qR/1tPtnn7wH3L2HfrH5P/9q32T/tF/99vTP+g/9e3sHvoftX183zT9R8x751n7Bf3HzHsnvH18Bwx/nHzH3v8R8/5Z8/2tQBoMAA0GgAYDQIPrQLq3p/t/1taH7G3b3jD1wQ69/W6H7x/6P1pbP7H1KXr/s318L1H6p+Z9tffQ//3tS/oPmffO2qvpN/L+FfrXzO938/5e3A8GgAYDQIPhMTA9Xf8x8/7xpf0Gv30+7t9h6sdnzffNqfQ/2Pqxbf0HzHvnA9P+3/5Z8z77q/u77f3/u7kHA0CDAaDBANBgAGgIpR+Y9g9N+wP/a//8/zXv/+qHAqFQKBQKhUKhUCgUCoX+P/0DN/U1s73DkSgAAAAASUVORK5CYII=";
+
+
+        // Configuración del coche
+        const carWidth = 1.8;
+        const carHeight = 0.8;
+        const carLength = 3.5;
+        const wheelRadius = 0.4;
+        const wheelWidth = 0.3;
+
+        let carSpeed = 0;
+        const maxSpeed = 0.3;
+        const maxReverseSpeed = -0.15;
+        const acceleration = 0.01;
+        const deceleration = 0.005; // Fricción natural
+        const turnSpeed = 0.03;
+
+        let turboActive = false;
+        const turboMultiplier = 2.5;
+        const turboDuration = 3; // segundos
+        let turboTimer = 0;
+        let turboCooldown = 0; // Enfriamiento para evitar spam
+        const turboCooldownDuration = 5; // segundos
+
+        // Estado de las teclas
+        const keys = {
+            W: false, S: false, A: false, D: false, Shift: false
+        };
+
+        // Límites del entorno
+        const groundSize = 150;
+        const environmentBounds = groundSize / 2 - carLength; // Para que el coche no se salga
+
+        init();
+        animate();
+
+        function init() {
+            // Escena
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050515); // Fondo azul oscuro
+            scene.fog = new THREE.Fog(0x050515, 50, 200);
+
+            // Cámara
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            // Posición inicial relativa, se actualizará para seguir al coche
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Sombras más suaves
+            document.body.appendChild(renderer.domElement);
+
+            // Luces
+            const ambientLight = new THREE.AmbientLight(0x404060, 1); // Luz ambiental suave
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directionalLight.position.set(50, 80, 30);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 200;
+            directionalLight.shadow.camera.left = -100;
+            directionalLight.shadow.camera.right = 100;
+            directionalLight.shadow.camera.top = 100;
+            directionalLight.shadow.camera.bottom = -100;
+            scene.add(directionalLight);
+            // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
+            // scene.add( helper );
+
+
+            // Coche
+            createCar();
+            car.position.y = wheelRadius; // Elevar el coche a la altura de las ruedas
+            scene.add(car);
+
+            // Suelo
+            const textureLoader = new THREE.TextureLoader();
+            const groundTexture = textureLoader.load(asphaltTextureBase64);
+            groundTexture.wrapS = THREE.RepeatWrapping;
+            groundTexture.wrapT = THREE.RepeatWrapping;
+            groundTexture.repeat.set(groundSize / 10, groundSize / 10); // Repetir textura
+
+            const groundGeometry = new THREE.PlaneGeometry(groundSize, groundSize);
+            const groundMaterial = new THREE.MeshStandardMaterial({
+                map: groundTexture,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Entorno de ciudad futurista
+            createCity();
+
+            // Controles
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+
+            // Ajustar al tamaño de la ventana
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function createCar() {
+            car = new THREE.Group();
+
+            // Cuerpo del coche
+            const bodyGeometry = new THREE.BoxGeometry(carWidth, carHeight, carLength);
+            const bodyMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8800cc, // Morado
+                roughness: 0.3,
+                metalness: 0.6
+            });
+            const carBody = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            carBody.castShadow = true;
+            carBody.position.y = carHeight / 2; // El centro del cuerpo está a la mitad de su altura
+            car.add(carBody);
+
+            // Cabina
+            const cabinWidth = carWidth * 0.8;
+            const cabinHeight = carHeight * 0.7;
+            const cabinLength = carLength * 0.5;
+            const cabinGeometry = new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinLength);
+            const cabinMaterial = new THREE.MeshStandardMaterial({
+                color: 0x333333, // Gris oscuro casi negro
+                roughness: 0.1,
+                metalness: 0.1,
+                transparent: true,
+                opacity: 0.8
+            });
+            const carCabin = new THREE.Mesh(cabinGeometry, cabinMaterial);
+            carCabin.castShadow = true;
+            carCabin.position.set(0, carHeight + cabinHeight / 2 -0.1, -carLength * 0.1);
+            car.add(carCabin);
+
+            // Ruedas
+            const wheelGeometry = new THREE.CylinderGeometry(wheelRadius, wheelRadius, wheelWidth, 32);
+            const wheelMaterial = new THREE.MeshStandardMaterial({
+                color: 0x222222,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+
+            const wheelPositions = [
+                new THREE.Vector3(carWidth / 2 + wheelWidth / 2, 0, carLength / 2 - wheelRadius * 1.5), // Delantera derecha
+                new THREE.Vector3(-carWidth / 2 - wheelWidth / 2, 0, carLength / 2 - wheelRadius * 1.5), // Delantera izquierda
+                new THREE.Vector3(carWidth / 2 + wheelWidth / 2, 0, -carLength / 2 + wheelRadius * 1.5), // Trasera derecha
+                new THREE.Vector3(-carWidth / 2 - wheelWidth / 2, 0, -carLength / 2 + wheelRadius * 1.5)  // Trasera izquierda
+            ];
+
+            wheelPositions.forEach(pos => {
+                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                wheel.castShadow = true;
+                wheel.rotation.z = Math.PI / 2; // Rotar para que estén verticales
+                wheel.position.copy(pos);
+                // No se añade al carBody, sino directamente al grupo 'car'
+                // y su posición es relativa al centro del grupo 'car'.
+                // Ajustamos la Y para que el centro de la rueda esté en la Y del grupo car (que es el suelo)
+                wheel.position.y = 0;
+                car.add(wheel);
+            });
+            // La posición Y del grupo 'car' se establecerá en wheelRadius globalmente.
+        }
+
+        function createCity() {
+            const buildingMaterial = new THREE.MeshStandardMaterial({
+                color: 0x202030, // Azul muy oscuro
+                roughness: 0.6,
+                metalness: 0.3
+            });
+            const neonMaterials = [
+                new THREE.MeshBasicMaterial({ color: 0x00ffff }), // Cian
+                new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Magenta
+                new THREE.MeshBasicMaterial({ color: 0x00ff00 })  // Verde Lima
+            ];
+
+            const buildingSpacing = 15;
+            const numBuildingsPerSide = Math.floor(groundSize / buildingSpacing / 2) -1;
+
+            for (let i = -numBuildingsPerSide; i <= numBuildingsPerSide; i++) {
+                for (let j = -numBuildingsPerSide; j <= numBuildingsPerSide; j++) {
+                    if (Math.abs(i * buildingSpacing) < carLength * 3 && Math.abs(j * buildingSpacing) < carLength * 3) continue; // Dejar espacio en el centro
+
+                    const posX = i * buildingSpacing + (Math.random() - 0.5) * 5;
+                    const posZ = j * buildingSpacing + (Math.random() - 0.5) * 5;
+
+                    const height = Math.random() * 30 + 10;
+                    const width = Math.random() * 5 + 5;
+                    const depth = Math.random() * 5 + 5;
+
+                    const buildingGeometry = new THREE.BoxGeometry(width, height, depth);
+                    const building = new THREE.Mesh(buildingGeometry, buildingMaterial.clone()); // Clonar para poder cambiar color si quisiera
+                    building.castShadow = true;
+                    building.receiveShadow = true;
+                    building.position.set(posX, height / 2, posZ);
+                    scene.add(building);
+
+                    // Añadir luces de neón a algunos edificios
+                    if (Math.random() < 0.3) {
+                        const neonHeight = Math.random() * (height * 0.5) + (height * 0.2);
+                        const neonThickness = 0.2;
+                        const neonGeometry = new THREE.BoxGeometry(width + neonThickness, neonThickness, depth + neonThickness);
+                        const neonLight = new THREE.Mesh(neonGeometry, neonMaterials[Math.floor(Math.random() * neonMaterials.length)]);
+                        neonLight.position.set(posX, neonHeight , posZ);
+                        scene.add(neonLight);
+                         // Luces puntuales para simular resplandor
+                        if (Math.random() < 0.5) {
+                           const pointLight = new THREE.PointLight(neonLight.material.color, 2, 20, 2);
+                           pointLight.position.set(posX, neonHeight + 1, posZ);
+                           scene.add(pointLight);
+                        }
+                    }
+                }
+            }
+        }
+
+        function onKeyDown(event) {
+            switch (event.code) {
+                case 'KeyW': keys.W = true; break;
+                case 'KeyS': keys.S = true; break;
+                case 'KeyA': keys.A = true; break;
+                case 'KeyD': keys.D = true; break;
+                case 'ShiftLeft':
+                case 'ShiftRight': keys.Shift = true; break;
+            }
+        }
+
+        function onKeyUp(event) {
+            switch (event.code) {
+                case 'KeyW': keys.W = false; break;
+                case 'KeyS': keys.S = false; break;
+                case 'KeyA': keys.A = false; break;
+                case 'KeyD': keys.D = false; break;
+                case 'ShiftLeft':
+                case 'ShiftRight': keys.Shift = false; break;
+            }
+        }
+
+        function updateCar(deltaTime) {
+            let currentMaxSpeed = maxSpeed;
+            let currentAcceleration = acceleration;
+
+            // Turbo Lógica
+            const turboIndicator = document.getElementById('turboIndicator');
+            if (turboCooldown > 0) {
+                turboCooldown -= deltaTime;
+            }
+
+            if (keys.Shift && !turboActive && turboCooldown <= 0) {
+                turboActive = true;
+                turboTimer = turboDuration;
+                turboIndicator.style.display = 'block';
+            }
+
+            if (turboActive) {
+                currentMaxSpeed *= turboMultiplier;
+                currentAcceleration *= turboMultiplier * 0.8; // Un poco más de aceleración en turbo
+                turboTimer -= deltaTime;
+                turboIndicator.textContent = `TURBO! ${turboTimer.toFixed(1)}s`;
+                if (turboTimer <= 0) {
+                    turboActive = false;
+                    turboCooldown = turboCooldownDuration; // Iniciar enfriamiento
+                    turboIndicator.style.display = 'none';
+                }
+            } else {
+                 turboIndicator.style.display = 'none';
+            }
+
+
+            // Aceleración y frenado
+            if (keys.W) {
+                carSpeed += currentAcceleration;
+            } else if (keys.S) {
+                carSpeed -= currentAcceleration * 0.8; // Frenar/reversa un poco más lento
+            } else {
+                // Deceleración natural (fricción)
+                if (carSpeed > 0) {
+                    carSpeed -= deceleration;
+                    if (carSpeed < 0) carSpeed = 0;
+                } else if (carSpeed < 0) {
+                    carSpeed += deceleration;
+                    if (carSpeed > 0) carSpeed = 0;
+                }
+            }
+
+            // Limitar velocidad
+            carSpeed = Math.max(maxReverseSpeed, Math.min(currentMaxSpeed, carSpeed));
+
+            // Giro (solo si se está moviendo un poco para realismo, o permitir siempre para arcade)
+            if (Math.abs(carSpeed) > 0.01) { // Solo gira si hay algo de velocidad
+                const turnFactor = Math.min(1, Math.abs(carSpeed) / (maxSpeed * 0.5)); // Gira menos a baja velocidad
+                if (keys.A) {
+                    car.rotation.y += turnSpeed * turnFactor * (carSpeed > 0 ? 1 : -1) ; // Invertir giro en reversa
+                }
+                if (keys.D) {
+                    car.rotation.y -= turnSpeed * turnFactor * (carSpeed > 0 ? 1 : -1);
+                }
+            }
+
+            // Mover el coche
+            car.translateX(carSpeed); // Moverse en su eje X local (que es "adelante" para el coche)
+                                      // THREE.js usa X como "adelante" para translate, Z para "arriba" local.
+                                      // Pero como el coche está orientado con su Z local hacia adelante, usamos translateZ
+                                      // Corrección: Si el modelo está orientado con Z adelante, usamos translateZ. Si X, translateX.
+                                      // Asumamos que el modelo del coche está hecho para que Z sea "adelante".
+                                      // Ajuste: Por defecto, un BoxGeometry está orientado con su "frente" hacia +Z.
+                                      // Por lo tanto, car.translateZ(carSpeed) es lo correcto.
+                                      // Si usé carWidth, carHeight, carLength, carLength es la profundidad (eje Z local)
+            car.translateZ(carSpeed);
+
+
+            // Mantener el coche dentro de los límites
+            car.position.x = Math.max(-environmentBounds, Math.min(environmentBounds, car.position.x));
+            car.position.z = Math.max(-environmentBounds, Math.min(environmentBounds, car.position.z));
+
+            // Mantener el coche sobre el suelo
+            car.position.y = wheelRadius; // Altura constante
+        }
+
+        function updateCamera() {
+            const cameraOffset = new THREE.Vector3(0, 4, -8); // Detrás y un poco arriba
+            const cameraTarget = new THREE.Vector3();
+
+            // Calcular la posición deseada de la cámara
+            cameraTarget.copy(car.position);
+            const offsetRotated = cameraOffset.clone().applyQuaternion(car.quaternion);
+            const desiredCameraPosition = new THREE.Vector3().addVectors(car.position, offsetRotated);
+
+            // Interpolar suavemente la posición de la cámara
+            camera.position.lerp(desiredCameraPosition, 0.1);
+
+            // La cámara mira un poco por delante del coche para anticipar el movimiento
+            const lookAtOffset = new THREE.Vector3(0, 1.5, 5); // Mirar un poco hacia adelante y arriba del coche
+            const lookAtRotated = lookAtOffset.clone().applyQuaternion(car.quaternion);
+            const lookAtPosition = new THREE.Vector3().addVectors(car.position, lookAtRotated);
+
+            camera.lookAt(lookAtPosition);
+        }
+
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const deltaTime = clock.getDelta();
+
+            updateCar(deltaTime);
+            updateCamera();
+
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
