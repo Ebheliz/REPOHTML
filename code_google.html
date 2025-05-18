@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domina la Creación de Contenido con IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para iconos (opcional, puedes usar SVGs) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #121212; /* Un negro profundo, no puro */
+            --bg-surface: #1e1e1e; /* Superficies de tarjetas */
+            --bg-surface-hover: #2a2a2a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #00e676; /* Un verde neón tecnológico */
+            --accent-color-hover: #00c853;
+            --border-color: #333333;
+            --font-main: 'Poppins', sans-serif;
+            --font-alt: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden; /* Evitar scroll horizontal accidental */
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-alt);
+            color: var(--text-primary);
+            margin-bottom: 0.75em;
+        }
+
+        p {
+            margin-bottom: 1em;
+            color: var(--text-secondary);
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-color-hover);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--bg-dark);
+            padding: 12px 30px;
+            border-radius: 50px; /* Botones más redondeados, estilo moderno */
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-family: var(--font-alt);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-color-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-dark);
+        }
+
+        /* Header */
+        .main-header {
+            background-color: var(--bg-surface); /* Un poco más claro que el fondo general */
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px; /* Ajuste para el container del header */
+            max-width: 1200px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .logo .highlight {
+            color: var(--accent-color);
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .main-nav ul li {
+            margin-left: 25px;
+        }
+
+        .main-nav ul li a {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .main-nav ul li a:hover, .main-nav ul li a.active {
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            padding: 60px 0;
+            background: 
+                linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.95)),
+                url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8dGVjaG5vbG9neSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1000&q=60') center/cover no-repeat;
+            /* Imagen de fondo genérica de tecnología */
+        }
+
+        .hero-content {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            background: linear-gradient(90deg, var(--accent-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+            opacity: 0.9;
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 60px 0;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        .section-title::after { /* Sutil subrayado */
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-color);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Benefits Section */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background-color: var(--bg-surface);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 230, 118, 0.1);
+        }
+
+        .benefit-card .icon {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        /* Testimonials Section */
+        #testimonials {
+            background-color: var(--bg-surface); /* Fondo ligeramente diferente para esta sección */
+        }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .testimonial-card {
+            background-color: var(--bg-dark); /* Tarjetas más oscuras que el fondo de la sección */
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--accent-color);
+        }
+        .testimonial-card p.quote {
+            font-style: italic;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+        .testimonial-card p.author {
+            font-weight: 600;
+            text-align: right;
+            color: var(--accent-color);
+        }
+        .testimonial-card p.author span {
+            display: block;
+            font-weight: 400;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+
+        /* CTA Section */
+        .cta-section {
+            background-color: var(--accent-color);
+            color: var(--bg-dark);
+            padding: 60px 0;
+            text-align: center;
+        }
+        .cta-section .section-title {
+            color: var(--bg-dark);
+            margin-bottom: 20px;
+        }
+        .cta-section .section-title::after {
+            background-color: var(--bg-dark);
+        }
+        .cta-section p {
+            color: var(--bg-surface);
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            font-size: 1.1rem;
+        }
+        .cta-section .btn {
+            background-color: var(--bg-dark);
+            color: var(--accent-color);
+            padding: 15px 40px;
+            font-size: 1.1rem;
+        }
+        .cta-section .btn:hover {
+            background-color: #000;
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: var(--bg-surface);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer-socials a {
+            margin: 0 10px;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+        .footer-socials a:hover {
+            color: var(--accent-color);
+        }
+        .main-footer p {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .main-header .container {
+                flex-direction: column;
+            }
+            .main-nav {
+                margin-top: 15px;
+            }
+            .main-nav ul li {
+                margin: 0 10px;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 480px) {
+             .hero h1 {
+                font-size: 2rem;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            .main-nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            .main-nav ul li {
+                margin: 5px 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <a href="#" class="logo">IA<span class="highlight">Creators</span></a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#hero" class="active">Inicio</a></li>
+                    <li><a href="#benefits">Beneficios</a></li>
+                    <li><a href="#testimonials">Testimonios</a></li>
+                    <li><a href="#cta">Únete</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero">
+            <div class="container hero-content">
+                <h1>Transforma tu Contenido con el Poder de la Inteligencia Artificial</h1>
+                <p>Descubre las herramientas y estrategias para llevar tu creación al siguiente nivel. Aprende a innovar, automatizar y fascinar a tu audiencia.</p>
+                <a href="#cta" class="btn">Comienza tu Viaje Ahora</a>
+            </div>
+        </section>
+
+        <section id="benefits" class="section">
+            <div class="container">
+                <h2 class="section-title">¿Qué Lograrás?</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="icon"><i class="fas fa-brain"></i></div>
+                        <h3>Ideas Ilimitadas</h3>
+                        <p>Desbloquea nuevas fuentes de inspiración y supera el bloqueo creativo con asistencia inteligente.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon"><i class="fas fa-rocket"></i></div>
+                        <h3>Producción Acelerada</h3>
+                        <p>Optimiza tus flujos de trabajo y dedica más tiempo a lo que amas: crear contenido impactante.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon"><i class="fas fa-chart-line"></i></div>
+                        <h3>Alcance Optimizado</h3>
+                        <p>Aprende a usar IA para entender mejor a tu audiencia y mejorar la distribución de tu contenido.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="section">
+            <div class="container">
+                <h2 class="section-title">Lo que Dicen Nuestros Creadores</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <p class="quote">"Desde que aplico estas técnicas, mi productividad se disparó y mi audiencia está más enganchada que nunca. ¡Increíble!"</p>
+                        <p class="author">Alex R. <span>- YouTuber & Blogger</span></p>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="quote">"Tenía mis dudas sobre la IA, pero este curso me abrió los ojos. Ahora es una herramienta esencial en mi arsenal creativo."</p>
+                        <p class="author">Laura M. <span>- Podcaster & Coach</span></p>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="quote">"La comunidad y el soporte son fantásticos. He aprendido muchísimo y conectado con otros creadores innovadores."</p>
+                        <p class="author">Carlos V. <span>- Creador de Cursos Online</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="cta-section">
+            <div class="container">
+                <h2 class="section-title">¿Listo para Revolucionar tu Contenido?</h2>
+                <p>Únete a nuestra comunidad de creadores pioneros y empieza a construir el futuro de tu contenido hoy mismo.</p>
+                <a href="#" class="btn">Inscríbete Ahora y Accede a Contenido Exclusivo</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-socials">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p>&copy; 2024 IACreators Hub. Todos los derechos reservados.</p>
+            <p><a href="#">Política de Privacidad</a> | <a href="#">Términos de Servicio</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling para anclas (opcional pero mejora la UX)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+
+                    // Opcional: Actualizar la clase 'active' en el nav
+                    document.querySelectorAll('.main-nav ul li a').forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Activar link del nav según scroll (más avanzado, para la próxima iteración)
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: Introducción a la IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0a0f2c; /* Azul noche profundo */
+            --secondary-color: #1a2a6c; /* Azul más claro */
+            --accent-color-1: #3a7bd5;   /* Azul vibrante */
+            --accent-color-2: #00d2ff;   /* Cian brillante */
+            --text-color: #f0f0f0;
+            --highlight-color: #ffc107; /* Amarillo para destacar */
+            --font-primary: 'Poppins', sans-serif;
+            --font-code: 'Roboto Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            perspective: 1000px; /* Para efectos 3D en transiciones */
+        }
+
+        .presentation-container {
+            width: 90vw;
+            max-width: 1200px;
+            height: 80vh;
+            max-height: 700px;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(100%) rotateY(-30deg);
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out, visibility 0.8s;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0) rotateY(0deg);
+        }
+        
+        .slide.exiting-prev {
+            transform: translateX(-100%) rotateY(30deg);
+            opacity: 0;
+        }
+
+        .slide.exiting-next {
+            transform: translateX(100%) rotateY(-30deg);
+            opacity: 0;
+        }
+
+        .slide-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent-color-2);
+            text-shadow: 0 0 10px var(--accent-color-2), 0 0 20px var(--accent-color-2);
+            animation: fadeInDown 1s ease-out forwards;
+        }
+
+        .slide-subtitle {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            color: var(--text-color);
+            opacity: 0.8;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+            animation-delay: 0.3s;
+        }
+
+        .slide-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 800px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+            animation-delay: 0.6s;
+        }
+        
+        .slide-content ul {
+            list-style: none;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .slide-content ul li {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .slide-content ul li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color-2);
+            font-size: 0.9em;
+        }
+        
+        .slide-content p {
+            margin-bottom: 15px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Estilos específicos por diapositiva --- */
+        #slide-1 {
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 210, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(58, 123, 213, 0.2) 0%, transparent 40%),
+                linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            position: relative;
+        }
+        #slide-1::before, #slide-1::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulse 4s infinite ease-in-out;
+        }
+        #slide-1::before { top: 10%; left: 15%; animation-delay: 0s; }
+        #slide-1::after { bottom: 10%; right: 15%; animation-delay: 2s; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        #slide-2 .slide-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+        }
+        #slide-2 .text-content { max-width: 50%; text-align: left; }
+        #slide-2 .image-placeholder-icons {
+            width: 40%;
+            height: 200px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 2px dashed var(--accent-color-1);
+            border-radius: 10px;
+            padding: 20px;
+            animation: zoomIn 1s ease-out 0.8s forwards;
+            opacity:0;
+        }
+        #slide-2 .icon-representation {
+            font-size: 2.5rem;
+            color: var(--accent-color-2);
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+         #slide-2 .icon-representation:hover { transform: scale(1.2); }
+
+        #slide-3 .timeline {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 30px;
+            position: relative;
+            width: 80%;
+        }
+        #slide-3 .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--accent-color-1);
+            border-radius: 2px;
+            animation: drawLine 1s ease-out 0.8s forwards;
+            transform-origin: top;
+            transform: scaleY(0);
+        }
+        @keyframes drawLine { to { transform: scaleY(1); } }
+
+        #slide-3 .timeline-item {
+            margin-left: 40px;
+            margin-bottom: 25px;
+            padding: 10px 15px;
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            position: relative;
+            text-align: left;
+            width: calc(100% - 40px);
+            opacity: 0;
+            animation: fadeInUpList 0.5s ease-out forwards;
+        }
+        #slide-3 .timeline-item:nth-child(1) { animation-delay: 1.0s; }
+        #slide-3 .timeline-item:nth-child(2) { animation-delay: 1.3s; }
+        #slide-3 .timeline-item:nth-child(3) { animation-delay: 1.6s; }
+
+        #slide-3 .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background-color: var(--accent-color-2);
+            border: 3px solid var(--primary-color);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        #slide-3 .timeline-year {
+            font-weight: 700;
+            color: var(--highlight-color);
+            margin-bottom: 5px;
+        }
+        @keyframes fadeInUpList {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #slide-4 .types-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 30px;
+            gap: 20px;
+        }
+        #slide-4 .ia-type {
+            background-color: rgba(255,255,255,0.07);
+            padding: 25px;
+            border-radius: 10px;
+            flex: 1;
+            border-left: 5px solid;
+            text-align: left;
+            opacity: 0;
+            animation: zoomIn 0.7s ease-out forwards;
+        }
+        #slide-4 .ia-type:nth-child(1) { border-color: var(--accent-color-2); animation-delay: 0.8s; }
+        #slide-4 .ia-type:nth-child(2) { border-color: var(--accent-color-1); animation-delay: 1s; }
+        #slide-4 .ia-type:nth-child(3) { border-color: var(--highlight-color); animation-delay: 1.2s; }
+        #slide-4 .ia-type h3 {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+         #slide-4 .ia-type p { font-size: 0.95rem; line-height: 1.5; }
+
+        #slide-5 .diagram-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 40px;
+            width: 100%;
+            font-family: var(--font-code);
+        }
+        #slide-5 .diagram-box, #slide-5 .diagram-arrow {
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fadeInUpList 0.6s ease-out forwards;
+        }
+        #slide-5 .diagram-box {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--accent-color-1);
+            box-shadow: 0 0 15px rgba(58, 123, 213, 0.3);
+        }
+        #slide-5 .diagram-arrow {
+            font-size: 2.5rem;
+            color: var(--accent-color-2);
+        }
+        #slide-5 .diagram-box:nth-child(1) { animation-delay: 0.8s; }
+        #slide-5 .diagram-arrow:nth-child(2) { animation-delay: 1.0s; }
+        #slide-5 .diagram-box:nth-child(3) { animation-delay: 1.2s; }
+        #slide-5 .diagram-arrow:nth-child(4) { animation-delay: 1.4s; }
+        #slide-5 .diagram-box:nth-child(5) { animation-delay: 1.6s; }
+
+         #slide-6 .content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            gap: 30px;
+        }
+        #slide-6 .text-content {
+            flex: 1;
+            text-align: left;
+        }
+        #slide-6 .neural-network-placeholder {
+            flex-basis: 300px;
+            height: 200px;
+            border: 2px dashed var(--accent-color-1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+            opacity: 0;
+            animation: zoomIn 1s ease-out 0.8s forwards;
+        }
+        #slide-6 .nn-layer { display: flex; flex-direction: column; justify-content: space-around; height: 100%; }
+        #slide-6 .nn-node {
+            width: 30px; height: 30px;
+            background-color: var(--accent-color-2);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-color-2);
+        }
+        #slide-6 .nn-layer:not(:last-child) .nn-node::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 2px;
+            background: var(--accent-color-1);
+            transform: translate(25px, 14px) rotate(-15deg);
+            opacity: 0.5;
+        }
+
+        #slide-7 .apps-collage {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            width: 80%;
+            margin-top: 30px;
+            opacity: 0;
+            animation: zoomIn 1s ease-out 0.8s forwards;
+        }
+        #slide-7 .app-item {
+            background-color: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+        #slide-7 .app-item .app-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent-color-2);
+        }
+
+        #slide-8 .industry-apps {
+            display: flex;
+            justify-content: space-around;
+            width: 90%;
+            margin-top: 40px;
+            gap: 20px;
+        }
+        #slide-8 .industry-item {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(var(--secondary-color), 0.5);
+            border-top: 5px solid var(--accent-color-1);
+            opacity: 0;
+            animation: fadeInUpList 0.6s ease-out forwards;
+        }
+        #slide-8 .industry-item:nth-child(1) { animation-delay: 0.8s; border-color: #4CAF50; }
+        #slide-8 .industry-item:nth-child(2) { animation-delay: 1.0s; border-color: #FFC107; }
+        #slide-8 .industry-item:nth-child(3) { animation-delay: 1.2s; border-color: #2196F3; }
+        
+        #slide-8 .industry-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        #slide-8 .industry-item:nth-child(1) .industry-icon { color: #4CAF50; }
+        #slide-8 .industry-item:nth-child(2) .industry-icon { color: #FFC107; }
+        #slide-8 .industry-item:nth-child(3) .industry-icon { color: #2196F3; }
+        #slide-8 .industry-item h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        #slide-8 .industry-item p { font-size: 0.9rem; }
+
+        #slide-9 .content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            gap: 40px;
+        }
+        #slide-9 .text-content { flex: 1.5; text-align: left; }
+        #slide-9 .balance-placeholder {
+            flex: 1;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6rem;
+            color: var(--accent-color-1);
+            opacity: 0;
+            animation: zoomIn 1s ease-out 0.8s forwards;
+            position: relative;
+        }
+        #slide-9 .balance-placeholder::before, #slide-9 .balance-placeholder::after {
+            content: '{}';
+            font-family: var(--font-code);
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--accent-color-2);
+            opacity: 0.7;
+        }
+        #slide-9 .balance-placeholder::before { top: 20%; left: 10%; transform: rotate(-15deg); }
+        #slide-9 .balance-placeholder::after { bottom: 20%; right: 10%; transform: rotate(15deg); }
+        
+        #slide-10 {
+             background: 
+                linear-gradient(rgba(10, 15, 44, 0.7), rgba(10, 15, 44, 0.9)),
+                url('https://images.unsplash.com/photo-1526378722484-bd91ca387e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGZ1dHVyaXN0aWMlMjBjaXR5fGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60') center/cover no-repeat;
+        }
+        #collaboration-placeholder {
+            font-size: 5rem;
+            margin-top: 20px;
+            opacity: 0;
+            animation: zoomIn 1s ease-out 1s forwards;
+        }
+        #collaboration-placeholder .human-icon { color: var(--text-color); margin-right: 20px; }
+        #collaboration-placeholder .plus-icon { color: var(--highlight-color); margin-right: 20px; }
+        #collaboration-placeholder .robot-icon { color: var(--accent-color-2); }
+        
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,255,255,0.1);
+            color: var(--text-color);
+            border: none;
+            padding: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            z-index: 100;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 210, 255, 0.5);
+            transform: translateY(-50%) scale(1.1);
+        }
+        #prevBtn { left: 20px; }
+        #nextBtn { right: 20px; }
+
+        .slide-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            z-index: 100;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Título -->
+        <div class="slide" id="slide-1">
+            <h1 class="slide-title">Introducción a la Inteligencia Artificial</h1>
+            <p class="slide-subtitle">¿Qué es y por qué es tan importante hoy?</p>
+            <!-- Fondo CSS simula la imagen -->
+        </div>
+
+        <!-- Slide 2: ¿Qué es la Inteligencia Artificial? -->
+        <div class="slide" id="slide-2">
+            <h2 class="slide-title">¿Qué es la Inteligencia Artificial?</h2>
+            <div class="slide-content">
+                <div class="text-content">
+                    <ul>
+                        <li><!-- Agrega aquí el primer punto del contenido --></li>
+                        <li><!-- Agrega aquí el segundo punto del contenido --></li>
+                        <!-- Puedes agregar más <li> según necesites -->
+                    </ul>
+                </div>
+                <div class="image-placeholder-icons" title="Íconos de tareas humanas (voz, vista, razonamiento) conectadas a una máquina o chip">
+                    <span class="icon-representation" title="Voz">🗣️</span>
+                    <span class="icon-representation" title="Vista">👁️</span>
+                    <span class="icon-representation" title="Razonamiento">🧠</span>
+                    <span class="icon-representation" title="Máquina/Chip">⚙️</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Breve Historia de la IA -->
+        <div class="slide" id="slide-3">
+            <h2 class="slide-title">Breve Historia de la IA</h2>
+            <div class="slide-content">
+                <div class="timeline" title="Línea de tiempo con hitos de IA">
+                    <div class="timeline-item">
+                        <div class="timeline-year">1950</div>
+                        <!-- Agrega aquí la descripción del hito -->
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1956</div>
+                        <!-- Agrega aquí la descripción del hito -->
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2000s+</div>
+                        <!-- Agrega aquí la descripción del hito -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Tipos de Inteligencia Artificial -->
+        <div class="slide" id="slide-4">
+            <h2 class="slide-title">Tipos de Inteligencia Artificial</h2>
+            <div class="slide-content">
+                <div class="types-container" title="Gráfico comparativo entre los tres tipos">
+                    <div class="ia-type">
+                        <h3>IA Débil (Estrecha)</h3>
+                        <p><!-- Agrega aquí la descripción de IA Débil --></p>
+                    </div>
+                    <div class="ia-type">
+                        <h3>IA Fuerte (General)</h3>
+                        <p><!-- Agrega aquí la descripción de IA Fuerte --></p>
+                    </div>
+                    <div class="ia-type">
+                        <h3>Superinteligencia Artificial</h3>
+                        <p><!-- Agrega aquí la descripción de Superinteligencia --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: ¿Cómo funciona la IA? -->
+        <div class="slide" id="slide-5">
+            <h2 class="slide-title">¿Cómo Funciona la IA?</h2>
+            <div class="slide-content">
+                <p><!-- Agrega aquí una introducción si es necesario --></p>
+                <div class="diagram-container" title="Diagrama simple de entrada → modelo → salida">
+                    <div class="diagram-box">DATOS<br/>(Entrada)</div>
+                    <div class="diagram-arrow">➔</div>
+                    <div class="diagram-box">ALGORITMOS<br/>(Modelo IA)</div>
+                    <div class="diagram-arrow">➔</div>
+                    <div class="diagram-box">DECISIONES<br/>(Salida)</div>
+                </div>
+                <p style="margin-top: 20px;"><!-- Agrega aquí una conclusión o explicación adicional del diagrama --></p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Aprendizaje Automático (Machine Learning) -->
+        <div class="slide" id="slide-6">
+            <h2 class="slide-title">Aprendizaje Automático (Machine Learning)</h2>
+            <div class="slide-content content-wrapper">
+                <div class="text-content">
+                    <ul>
+                        <li><!-- Agrega aquí el primer punto del contenido --></li>
+                        <li><!-- Agrega aquí el segundo punto del contenido --></li>
+                        <li><!-- Agrega aquí el tercer punto del contenido (ejemplos) --></li>
+                    </ul>
+                </div>
+                <div class="neural-network-placeholder" title="Árbol de decisión o red neuronal básica">
+                    <div class="nn-layer"> <div class="nn-node"></div> <div class="nn-node"></div> <div class="nn-node"></div> </div>
+                    <div class="nn-layer"> <div class="nn-node"></div> <div class="nn-node"></div> <div class="nn-node"></div> <div class="nn-node"></div> </div>
+                    <div class="nn-layer"> <div class="nn-node"></div> <div class="nn-node"></div> </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Aplicaciones en la Vida Diaria -->
+        <div class="slide" id="slide-7">
+            <h2 class="slide-title">Aplicaciones en la Vida Diaria</h2>
+            <div class="slide-content">
+                <div class="apps-collage" title="Collage de apps y tecnologías cotidianas">
+                    <div class="app-item"><span class="app-icon">🗣️</span><!-- Nombre App 1 --></div>
+                    <div class="app-item"><span class="app-icon">🎬</span><!-- Nombre App 2 --></div>
+                    <div class="app-item"><span class="app-icon">🤳</span><!-- Nombre App 3 --></div>
+                    <div class="app-item"><span class="app-icon">📧</span><!-- Nombre App 4 --></div>
+                    <div class="app-item"><span class="app-icon">🗺️</span><!-- Nombre App 5 --></div>
+                    <div class="app-item"><span class="app-icon">💬</span><!-- Nombre App 6 --></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Aplicaciones en la Industria -->
+        <div class="slide" id="slide-8">
+            <h2 class="slide-title">Aplicaciones en la Industria</h2>
+            <div class="slide-content">
+                <div class="industry-apps" title="Íconos de salud, bolsa de valores, y autos autónomos">
+                    <div class="industry-item">
+                        <div class="industry-icon">⚕️</div>
+                        <h3>Medicina</h3>
+                        <p><!-- Agrega aquí la descripción de aplicaciones en Medicina --></p>
+                    </div>
+                    <div class="industry-item">
+                        <div class="industry-icon">📈</div>
+                        <h3>Finanzas</h3>
+                        <p><!-- Agrega aquí la descripción de aplicaciones en Finanzas --></p>
+                    </div>
+                    <div class="industry-item">
+                        <div class="industry-icon">🚗</div>
+                        <h3>Transporte</h3>
+                        <p><!-- Agrega aquí la descripción de aplicaciones en Transporte --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 9: Desafíos y Consideraciones Éticas -->
+        <div class="slide" id="slide-9">
+            <h2 class="slide-title">Desafíos y Ética</h2>
+            <div class="slide-content content-wrapper">
+                <div class="text-content">
+                    <ul>
+                        <li><strong><!-- Título Desafío 1 -->:</strong> <!-- Descripción --></li>
+                        <li><strong><!-- Título Desafío 2 -->:</strong> <!-- Descripción --></li>
+                        <li><strong><!-- Título Desafío 3 -->:</strong> <!-- Descripción --></li>
+                        <!-- Agrega más según necesites -->
+                    </ul>
+                </div>
+                 <div class="balance-placeholder" title="Balanza de justicia con elementos digitales">
+                    ⚖️
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Futuro de la IA -->
+        <div class="slide" id="slide-10">
+            <h2 class="slide-title">El Fascinante Futuro de la IA</h2>
+             <div class="slide-content">
+                <ul>
+                    <li><!-- Agrega aquí el primer punto del futuro de la IA --></li>
+                    <li><!-- Agrega aquí el segundo punto del futuro de la IA --></li>
+                    <li><!-- Agrega aquí el tercer punto del futuro de la IA --></li>
+                    <li><!-- Agrega aquí el cuarto punto del futuro de la IA --></li>
+                </ul>
+                <div id="collaboration-placeholder" title="Futurista, humano y robot colaborando">
+                    <span class="human-icon">👤</span>
+                    <span class="plus-icon">+</span>
+                    <span class="robot-icon">🤖</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación -->
+        <button id="prevBtn" class="nav-button">❮</button>
+        <button id="nextBtn" class="nav-button">❯</button>
+        <div class="slide-indicator" id="slideIndicator">1 / 10</div>
+
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const slideIndicator = document.getElementById('slideIndicator');
+        let currentSlide = 0;
+
+        function showSlide(index, direction = 'next') {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active', 'exiting-prev', 'exiting-next');
+                if (i === currentSlide && i !== index) {
+                    if (direction === 'next') {
+                        slide.classList.add('exiting-prev');
+                    } else {
+                        slide.classList.add('exiting-next');
+                    }
+                }
+            });
+
+            slides[index].offsetHeight; 
+            slides[index].classList.add('active');
+            
+            const animatedElements = slides[index].querySelectorAll('[style*="animation-delay"], .slide-title, .slide-subtitle, .slide-content, .slide-content ul li, .slide-content > div > div');
+            animatedElements.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; 
+                el.style.animation = '';
+            });
+            
+            currentSlide = index;
+            updateIndicator();
+        }
+
+        function nextSlide() {
+            const nextIndex = (currentSlide + 1) % slides.length;
+            showSlide(nextIndex, 'next');
+        }
+
+        function prevSlide() {
+            const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(prevIndex, 'prev');
+        }
+        
+        function updateIndicator() {
+            slideIndicator.textContent = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
