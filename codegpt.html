@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Cómo Funciona un Modelo de Lenguaje Grande?</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Alinear arriba */
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 30px;
+            overflow-x: hidden; /* Evitar scroll horizontal */
+        }
+
+        .simulation-container {
+            width: 90%;
+            max-width: 1000px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+        }
+
+        .controls {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .controls input[type="text"] {
+            padding: 12px 15px;
+            border: 2px solid #d1d8e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 60%;
+            max-width: 400px;
+            transition: border-color 0.3s ease;
+        }
+        .controls input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .controls button {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .controls button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .controls button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pipeline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Espacio entre etapas y flechas */
+        }
+
+        .step {
+            background-color: #ecf0f1;
+            border: 2px solid #d1d8e0;
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            min-height: 80px; /* Altura mínima para visualización */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.3; /* Iniciar semi-transparentes */
+            transform: scale(0.95);
+            transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.5s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+            transform: scale(1);
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .step-content {
+            font-size: 0.95rem;
+            color: #555;
+            word-break: break-word; /* Para que el texto no se desborde */
+            width: 100%;
+        }
+        .step-content .token {
+            display: inline-block;
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 3px 8px;
+            margin: 3px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+        .step-content .neural-layer {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #7f8c8d;
+            border-radius: 50%;
+            margin: 5px;
+            animation: pulse-layer 1.5s infinite ease-in-out;
+        }
+        .step-content .neural-layer.active-processing {
+            background-color: #3498db;
+            animation: pulse-processing 0.5s infinite alternate;
+        }
+
+        @keyframes pulse-layer {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        @keyframes pulse-processing {
+            from { transform: scale(1.1); }
+            to { transform: scale(1.2); }
+        }
+
+
+        .arrow {
+            font-size: 2.5rem;
+            color: #bdc3c7;
+            opacity: 0.3;
+            transform: scaleY(0.8);
+            transition: opacity 0.5s ease, color 0.5s ease, transform 0.5s ease;
+            margin: -5px 0; /* Ajuste para que no haya tanto espacio */
+        }
+        .arrow.active {
+            opacity: 1;
+            color: #3498db;
+            transform: scaleY(1);
+        }
+
+        .output-area {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            min-height: 50px;
+        }
+        .output-area h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .output-area p {
+            font-size: 1.1rem;
+            color: #16a085; /* Un verde para la respuesta */
+            font-weight: 500;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="simulation-container">
+        <h1>¿Cómo Funciona un Modelo de Lenguaje Grande?</h1>
+        
+        <div class="controls">
+            <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí...">
+            <button id="startButton">Iniciar Simulación</button>
+        </div>
+
+        <div class="pipeline">
+            <!-- Paso 1: Entrada del Usuario -->
+            <div class="step" id="step1">
+                <div class="step-title">1. Entrada del Usuario</div>
+                <div class="step-content" id="step1-content">
+                    <!-- El texto del usuario aparecerá aquí -->
+                </div>
+            </div>
+            
+            <div class="arrow" id="arrow1">⬇️</div>
+
+            <!-- Paso 2: Tokenización -->
+            <div class="step" id="step2">
+                <div class="step-title">2. Tokenización</div>
+                <div class="step-content" id="step2-content">
+                    <!-- Los tokens aparecerán aquí -->
+                </div>
+            </div>
+
+            <div class="arrow" id="arrow2">⬇️</div>
+
+            <!-- Paso 3: Capas Neuronales -->
+            <div class="step" id="step3">
+                <div class="step-title">3. Procesamiento en Capas Neuronales</div>
+                <div class="step-content" id="step3-content">
+                    <div class="neural-layer"></div>
+                    <div class="neural-layer"></div>
+                    <div class="neural-layer"></div>
+                    <div class="neural-layer"></div>
+                    <div class="neural-layer"></div>
+                    <!-- Más capas si se desea -->
+                </div>
+            </div>
+
+            <div class="arrow" id="arrow3">⬇️</div>
+
+            <!-- Paso 4: Predicción de Siguientes Tokens -->
+            <div class="step" id="step4">
+                <div class="step-title">4. Predicción de Siguientes Tokens</div>
+                <div class="step-content" id="step4-content">
+                    <!-- Tokens predichos (ej. con probabilidades) -->
+                </div>
+            </div>
+
+            <div class="arrow" id="arrow4">⬇️</div>
+
+            <!-- Paso 5: Reconstrucción de Respuesta -->
+            <div class="step" id="step5">
+                <div class="step-title">5. Reconstrucción de la Respuesta</div>
+                <div class="step-content" id="step5-content">
+                    <!-- La respuesta se forma aquí -->
+                </div>
+            </div>
+
+            <div class="arrow" id="arrow5">⬇️</div>
+
+            <!-- Paso 6: Entrega al Usuario -->
+            <div class="step" id="step6">
+                <div class="step-title">6. Respuesta Entregada</div>
+                <div class="step-content" id="step6-content">
+                    <!-- Respuesta final aquí -->
+                </div>
+            </div>
+        </div>
+
+        <div class="output-area" id="finalOutputArea" style="display: none;">
+            <h3>Respuesta del Modelo:</h3>
+            <p id="finalOutputText"></p>
+        </div>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const userInput = document.getElementById('userInput');
+        const steps = [
+            document.getElementById('step1'), document.getElementById('step2'),
+            document.getElementById('step3'), document.getElementById('step4'),
+            document.getElementById('step5'), document.getElementById('step6')
+        ];
+        const arrows = [
+            document.getElementById('arrow1'), document.getElementById('arrow2'),
+            document.getElementById('arrow3'), document.getElementById('arrow4'),
+            document.getElementById('arrow5')
+        ];
+        const stepContents = [
+            document.getElementById('step1-content'), document.getElementById('step2-content'),
+            document.getElementById('step3-content'), document.getElementById('step4-content'),
+            document.getElementById('step5-content'), document.getElementById('step6-content')
+        ];
+        const finalOutputArea = document.getElementById('finalOutputArea');
+        const finalOutputText = document.getElementById('finalOutputText');
+
+        let simulationInProgress = false;
+        let currentStep = 0;
+        let userText = "";
+        let tokens = [];
+        let predictedTokens = [];
+        let reconstructedResponse = "";
+
+        // Simulación de respuestas (muy simplificada)
+        const responsesMap = {
+            "hola": ["¡Hola!", "¿En", "qué", "puedo", "ayudarte", "hoy?"],
+            "como estas": ["Estoy", "funcionando", "correctamente.", "Gracias", "por", "preguntar."],
+            "que es ia": ["La", "Inteligencia", "Artificial", "es", "un", "campo", "de", "la", "informática...", "(explicación más larga)"],
+            "crea un poema": ["En", "el", "jardín", "digital,", "donde", "los", "datos", "florecen,", "un", "eco", "de", "ideas,", "la", "IA", "amanece."],
+            "default": ["Entendido.", "Procesando", "tu", "solicitud..."]
+        };
+
+
+        function resetSimulation() {
+            steps.forEach(step => step.classList.remove('active'));
+            arrows.forEach(arrow => arrow.classList.remove('active'));
+            stepContents.forEach(content => content.innerHTML = '');
+            finalOutputArea.style.display = 'none';
+            finalOutputText.textContent = '';
+            currentStep = 0;
+            simulationInProgress = false;
+            startButton.disabled = false;
+            userText = "";
+            tokens = [];
+            predictedTokens = [];
+            reconstructedResponse = "";
+        }
+
+        function activateStep(stepIndex) {
+            if (stepIndex < steps.length) {
+                steps[stepIndex].classList.add('active');
+            }
+            if (stepIndex > 0 && stepIndex <= arrows.length) {
+                arrows[stepIndex - 1].classList.add('active');
+            }
+
+            // Contenido específico del paso
+            switch (stepIndex) {
+                case 0: // Entrada del Usuario
+                    stepContents[0].textContent = `"${userText}"`;
+                    break;
+                case 1: // Tokenización
+                    tokens = userText.toLowerCase().replace(/[^\w\s]/gi, '').split(/\s+/).filter(Boolean); // Simplificado
+                    tokens.forEach(token => {
+                        const span = document.createElement('span');
+                        span.className = 'token';
+                        span.textContent = token;
+                        stepContents[1].appendChild(span);
+                    });
+                    break;
+                case 2: // Capas Neuronales (Simulación visual)
+                    const layers = stepContents[2].querySelectorAll('.neural-layer');
+                    layers.forEach((layer, i) => {
+                        setTimeout(() => {
+                            layer.classList.add('active-processing');
+                            setTimeout(() => layer.classList.remove('active-processing'), 500 + i * 100);
+                        }, i * 150);
+                    });
+                    break;
+                case 3: // Predicción de Siguientes Tokens
+                    const lowerUserText = userText.toLowerCase();
+                    predictedTokens = responsesMap[lowerUserText] || responsesMap["default"].concat([tokens[tokens.length -1] || "modelo."]);
+                    
+                    predictedTokens.forEach((token, i) => {
+                        const span = document.createElement('span');
+                        span.className = 'token';
+                        span.style.opacity = (1 - i * 0.1).toFixed(1); // Simular probabilidad
+                        span.textContent = token;
+                        stepContents[3].appendChild(span);
+                    });
+                    break;
+                case 4: // Reconstrucción de Respuesta
+                    reconstructedResponse = predictedTokens.join(' ').replace(/\s([?.!,:;])/g, '$1'); // Unir y ajustar puntuación
+                    stepContents[4].textContent = `"${reconstructedResponse}"`;
+                    break;
+                case 5: // Entrega al Usuario
+                    stepContents[5].textContent = `"${reconstructedResponse}"`;
+                    finalOutputText.textContent = reconstructedResponse;
+                    finalOutputArea.style.display = 'block';
+                    simulationInProgress = false;
+                    startButton.disabled = false;
+                    break;
+            }
+
+            // Avanzar al siguiente paso
+            if (simulationInProgress && stepIndex < steps.length - 1) {
+                currentStep++;
+                setTimeout(() => activateStep(currentStep), stepIndex === 2 ? 1500 : 1000); // Más tiempo para las capas
+            } else if (stepIndex === steps.length -1 ) {
+                 // Simulación completada
+                 simulationInProgress = false;
+                 startButton.disabled = false;
+            }
+        }
+
+        startButton.addEventListener('click', () => {
+            userText = userInput.value.trim();
+            if (!userText) {
+                alert("Por favor, escribe una pregunta o mensaje.");
+                return;
+            }
+            if (simulationInProgress) return;
+
+            resetSimulation();
+            simulationInProgress = true;
+            startButton.disabled = true;
+            activateStep(currentStep);
+        });
+
+        // Inicializar con un ejemplo para que no esté vacío
+        userInput.value = "Hola, ¿cómo estás?";
+
+    </script>
+</body>
+</html>
