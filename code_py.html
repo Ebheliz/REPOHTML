@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso Completo de Python: De Cero a Profesional</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Font Awesome for icons -->
+    <style>
+        /* Reset y Estilos Base */
+        :root {
+            --primary-color: #0056d2; /* Azul tipo Coursera */
+            --secondary-color: #f0f2f5; /* Gris claro para fondos */
+            --text-color: #333;
+            --heading-color: #1c1d1f;
+            --accent-color: #ffc107; /* Amarillo para acentos */
+            --border-color: #ddd;
+            --card-bg: #fff;
+            --font-sans: 'Arial', sans-serif; /* Usar fuentes disponibles */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--secondary-color);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--heading-color);
+            margin-bottom: 0.8em;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.8em; }
+        h2 { font-size: 2.2em; }
+        h3 { font-size: 1.8em; }
+        h4 { font-size: 1.4em; }
+
+        p {
+            margin-bottom: 1em;
+            color: #555;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0041a8;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Header / Navbar */
+        .navbar {
+            background-color: var(--card-bg);
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px; /* Add padding for container inside navbar */
+        }
+
+        .navbar .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .navbar .logo i {
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-links li {
+            margin-left: 25px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 86, 210, 0.8), rgba(0, 65, 168, 0.8)), url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            color: #fff;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            color: #fff;
+            font-size: 3.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .hero p {
+            font-size: 1.3em;
+            margin-bottom: 1.5em;
+            color: #e0e0e0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Course Overview Section */
+        .course-overview {
+            padding: 60px 0;
+            background-color: var(--card-bg);
+        }
+        .course-overview h2 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .overview-item {
+            background-color: var(--secondary-color);
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .overview-item i {
+            font-size: 3em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        /* Curriculum Section */
+        .curriculum {
+            padding: 60px 0;
+        }
+        .curriculum h2 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .level-card {
+            background-color: var(--card-bg);
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .level-header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .level-header h3 {
+            color: #fff;
+            margin-bottom: 0;
+        }
+        .level-header .toggle-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+        .level-header.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .level-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .level-content.active {
+            padding: 20px;
+             /* Adjust based on content, or use JS to calculate */
+        }
+
+
+        .feature-card {
+            background-color: var(--secondary-color);
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-header {
+            background-color: #e9ecef;
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .feature-header h4 {
+            margin-bottom: 0;
+            font-size: 1.3em;
+        }
+        .feature-header .toggle-icon-feature {
+            font-size: 1em;
+            transition: transform 0.3s ease;
+        }
+        .feature-header.active .toggle-icon-feature {
+             transform: rotate(180deg);
+        }
+
+        .feature-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+        }
+        .feature-content.active {
+            padding: 15px;
+        }
+
+        .feature-content strong {
+            color: var(--heading-color);
+        }
+
+        .feature-content ul {
+            list-style-position: inside;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        .feature-content ul li {
+            margin-bottom: 5px;
+        }
+
+        .practice-area {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .practice-area label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        .practice-area textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+        }
+
+        /* Instructor Section */
+        .instructor {
+            padding: 60px 0;
+            background-color: var(--card-bg);
+            text-align: center;
+        }
+        .instructor img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0,86,210,0.3);
+        }
+
+        /* Call to Action Section */
+        .cta-section {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .cta-section h2 { color: #fff; }
+        .cta-section p { color: #e0e0e0; max-width: 600px; margin: 0 auto 30px auto; }
+
+
+        /* Footer */
+        .footer {
+            background-color: var(--heading-color);
+            color: #ccc;
+            text-align: center;
+            padding: 30px 0;
+        }
+        .footer p {
+            margin-bottom: 0;
+            color: #ccc;
+        }
+        .footer a {
+            color: var(--accent-color);
+        }
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .hero h1 { font-size: 2.8em; }
+            .hero p { font-size: 1.1em; }
+            h1 { font-size: 2.4em; }
+            h2 { font-size: 1.9em; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar .container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                margin-top: 15px;
+                width: 100%;
+                flex-direction: column;
+            }
+            .nav-links li {
+                margin-left: 0;
+                margin-bottom: 10px;
+                text-align: center;
+                background: #f9f9f9;
+                padding: 8px;
+                border-radius: 4px;
+            }
+             .hero h1 { font-size: 2.2em; }
+            .hero p { font-size: 1em; }
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container { width: 95%; }
+            .hero h1 { font-size: 1.8em; }
+            .hero p { font-size: 0.9em; }
+            .btn { padding: 10px 20px; font-size: 0.9em; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.6em; }
+            h3 { font-size: 1.4em; }
+            h4 { font-size: 1.2em; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo"><i class="fas fa-terminal"></i> Python Pro</a>
+            <ul class="nav-links">
+                <li><a href="#overview">Descripción</a></li>
+                <li><a href="#curriculum">Currículum</a></li>
+                <li><a href="#instructor">Instructor</a></li>
+                <li><a href="#enroll">Inscribirse</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <h1>Curso Completo de Python: De Cero a Profesional</h1>
+            <p>Domina Python, el lenguaje de programación más versátil y demandado. Aprende desde los fundamentos hasta temas avanzados como desarrollo backend, IA, scraping y automatización.</p>
+            <a href="#enroll" class="btn btn-lg">¡Comienza a Aprender Ahora!</a>
+        </div>
+    </header>
+
+    <!-- Course Overview Section -->
+    <section id="overview" class="course-overview">
+        <div class="container">
+            <h2>¿Qué Aprenderás en este Curso?</h2>
+            <div class="overview-grid">
+                <div class="overview-item">
+                    <i class="fas fa-code"></i>
+                    <h3>Fundamentos Sólidos</h3>
+                    <p>Sintaxis, estructuras de datos, lógica de programación y funciones.</p>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-object-group"></i>
+                    <h3>Programación Orientada a Objetos</h3>
+                    <p>Clases, objetos, herencia y polimorfismo para código modular.</p>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-server"></i>
+                    <h3>Desarrollo Backend</h3>
+                    <p>Crea APIs robustas con FastAPI, maneja bases de datos y autenticación.</p>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-robot"></i>
+                    <h3>IA y Ciencia de Datos</h3>
+                    <p>Introducción a NumPy, Pandas, Scikit-learn para análisis y modelos.</p>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-spider"></i>
+                    <h3>Web Scraping</h3>
+                    <p>Extrae datos de sitios web usando Requests y BeautifulSoup.</p>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Automatización</h3>
+                    <p>Crea scripts para automatizar tareas repetitivas y mejorar tu productividad.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Curriculum Section -->
+    <section id="curriculum" class="curriculum">
+        <div class="container">
+            <h2>Currículum del Curso Detallado</h2>
+
+            <!-- NIVEL 1 -->
+            <div class="level-card">
+                <div class="level-header">
+                    <h3>Nivel 1: Sistema Base - Fundamentos Esenciales</h3>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="level-content">
+                    <!-- Feature 1.1 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 1.1: Motor de Ejecución y Sintaxis Primaria</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Capacidad de escribir y ejecutar los comandos más básicos de Python.</p>
+                            <strong>Qué aprenderás:</strong>
+                            <ul>
+                                <li>Instalación de Python y VS Code.</li>
+                                <li>Tu primer script: `print("Hola Mundo")`.</li>
+                                <li>Variables y asignación.</li>
+                                <li>Tipos de datos: strings, números, booleanos.</li>
+                                <li>Operadores aritméticos básicos.</li>
+                            </ul>
+                            <p><strong>Entregable esperado:</strong> Script `calculadora_basica.py`.</p>
+                            <div class="practice-area">
+                                <label for="f11_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f11_notes" placeholder="Escribe tus notas, ideas o ejemplos aquí..."></textarea>
+                                <label for="f11_code">Mi Código de Práctica:</label>
+                                <textarea id="f11_code" placeholder="print('Hola desde mi práctica!')"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 1.2 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 1.2: Controlador de Flujo Lógico</h4>
+                             <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Capacidad de tomar decisiones y repetir acciones en el código.</p>
+                            <strong>Qué aprenderás:</strong>
+                            <ul>
+                                <li>Operadores de comparación y lógicos.</li>
+                                <li>Condicionales: `if`, `elif`, `else`.</li>
+                                <li>Bucles: `while`, `for` (con `range()`).</li>
+                                <li>Instrucciones `break` y `continue`.</li>
+                            </ul>
+                            <p><strong>Entregable esperado:</strong> Script `adivina_numero.py`.</p>
+                            <div class="practice-area">
+                                <label for="f12_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f12_notes" placeholder="Escribe tus notas, ideas o ejemplos aquí..."></textarea>
+                                <label for="f12_code">Mi Código de Práctica:</label>
+                                <textarea id="f12_code" placeholder="numero_secreto = 7\nif numero_secreto > 5:\n    print('Mayor a 5')"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 1.3 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 1.3: Organizador de Datos Simples</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Capacidad de almacenar y manipular colecciones de datos.</p>
+                             <strong>Qué aprenderás:</strong>
+                            <ul>
+                                <li>Listas: creación, acceso, métodos básicos.</li>
+                                <li>Tuplas: creación, inmutabilidad.</li>
+                                <li>Diccionarios: creación, acceso, métodos básicos.</li>
+                            </ul>
+                            <p><strong>Entregable esperado:</strong> Script `lista_de_tareas.py`.</p>
+                            <div class="practice-area">
+                                <label for="f13_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f13_notes" placeholder="Escribe tus notas, ideas o ejemplos aquí..."></textarea>
+                                <label for="f13_code">Mi Código de Práctica:</label>
+                                <textarea id="f13_code" placeholder="mi_lista = [1, 2, 3]\nmi_diccionario = {'clave': 'valor'}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Feature 1.4 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 1.4: Mecanismo de Reutilización (Funciones)</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Capacidad de encapsular bloques de código para su reutilización.</p>
+                             <strong>Qué aprenderás:</strong>
+                            <ul>
+                                <li>Definición de funciones (`def`).</li>
+                                <li>Parámetros y argumentos.</li>
+                                <li>Valores de retorno (`return`).</li>
+                            </ul>
+                            <p><strong>Entregable esperado:</strong> Refactorizar `lista_de_tareas.py` usando funciones.</p>
+                            <div class="practice-area">
+                                <label for="f14_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f14_notes" placeholder="Escribe tus notas, ideas o ejemplos aquí..."></textarea>
+                                <label for="f14_code">Mi Código de Práctica:</label>
+                                <textarea id="f14_code" placeholder="def saludar(nombre):\n    return f'Hola, {nombre}!'"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NIVEL 2 -->
+            <div class="level-card">
+                <div class="level-header">
+                    <h3>Nivel 2: Sistema Mejorado - Python Intermedio</h3>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="level-content">
+                    <!-- Feature 2.1 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 2.1: Constructor de Entidades (OOP Básica)</h4>
+                             <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Modelar conceptos del mundo real como objetos.</p>
+                            <strong>Qué aprenderás:</strong> Clases, Objetos, `__init__`, atributos, métodos, `self`.
+                            <p><strong>Entregable esperado:</strong> Script `gestor_biblioteca_simple.py` con clase `Libro`.</p>
+                            <div class="practice-area">
+                                <label for="f21_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f21_notes"></textarea>
+                                <label for="f21_code">Mi Código de Práctica:</label>
+                                <textarea id="f21_code" placeholder="class Perro:\n    def __init__(self, nombre):\n        self.nombre = nombre"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 2.2 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 2.2: Persistencia de Datos y Robustez</h4>
+                             <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Guardar datos en archivos y manejar errores.</p>
+                            <strong>Qué aprenderás:</strong> Archivos de texto, JSON, `try-except`.
+                            <p><strong>Entregable esperado:</strong> Modificar gestor para guardar/cargar en JSON.</p>
+                            <div class="practice-area">
+                                <label for="f22_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f22_notes"></textarea>
+                                <label for="f22_code">Mi Código de Práctica:</label>
+                                <textarea id="f22_code" placeholder="try:\n    with open('datos.txt', 'r') as f:\n        contenido = f.read()\nexcept FileNotFoundError:\n    print('Archivo no encontrado')"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 2.3 -->
+                     <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 2.3: Modularización Avanzada y Entornos Aislados</h4>
+                             <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Organizar código en módulos y gestionar dependencias.</p>
+                            <strong>Qué aprenderás:</strong> Creación e importación de módulos, `venv`, `requirements.txt`.
+                            <p><strong>Entregable esperado:</strong> Proyecto con módulo `utilidades.py` y entorno virtual.</p>
+                            <div class="practice-area">
+                                <label for="f23_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f23_notes"></textarea>
+                                <label for="f23_code">Mi Código de Práctica:</label>
+                                <textarea id="f23_code" placeholder="# en utilidades.py\ndef mi_funcion():\n    return 'Utilidad'\n\n# en main.py\nfrom utilidades import mi_funcion"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Feature 2.4 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 2.4: OOP Avanzada - Herencia y Polimorfismo</h4>
+                             <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Crear jerarquías de clases y comportamientos flexibles.</p>
+                            <strong>Qué aprenderás:</strong> Herencia, sobrescritura de métodos, polimorfismo, `__str__`.
+                            <p><strong>Entregable esperado:</strong> Script `sistema_animales.py` con clases `Animal`, `Perro`, `Gato`.</p>
+                            <div class="practice-area">
+                                <label for="f24_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f24_notes"></textarea>
+                                <label for="f24_code">Mi Código de Práctica:</label>
+                                <textarea id="f24_code" placeholder="class Animal:\n    def hacer_sonido(self):\n        pass\n\nclass Perro(Animal):\n    def hacer_sonido(self):\n        return 'Guau!'"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NIVEL 3 -->
+            <div class="level-card">
+                <div class="level-header">
+                    <h3>Nivel 3: Sistema Conectado y Probado - Python Aplicado</h3>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="level-content">
+                    <!-- Feature 3.1 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 3.1: Garantía de Calidad (Testing con Pytest)</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Escribir pruebas automatizadas para asegurar la fiabilidad del código.</p>
+                            <strong>Qué aprenderás:</strong> Conceptos de testing, `pytest`, aserciones.
+                            <p><strong>Entregable esperado:</strong> Tests unitarios para `utilidades.py` y clases anteriores.</p>
+                            <div class="practice-area">
+                                <label for="f31_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f31_notes"></textarea>
+                                <label for="f31_code">Mi Código de Práctica:</label>
+                                <textarea id="f31_code" placeholder="# test_utilidades.py\nfrom utilidades import mi_funcion\n\ndef test_mi_funcion():\n    assert mi_funcion() == 'Utilidad'"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 3.2 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 3.2: Interfaz de Servicio Web (API con FastAPI Básico)</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Exponer funcionalidades de tu código a través de una API web.</p>
+                            <strong>Qué aprenderás:</strong> API REST, FastAPI, Uvicorn, Pydantic, JSON.
+                            <p><strong>Entregable esperado:</strong> API simple para gestor de biblioteca con endpoints GET y POST.</p>
+                            <div class="practice-area">
+                                <label for="f32_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f32_notes"></textarea>
+                                <label for="f32_code">Mi Código de Práctica:</label>
+                                <textarea id="f32_code" placeholder="from fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/')\ndef raiz():\n    return {'mensaje': 'Hola API'}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 3.3 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 3.3: Extractor de Información Web (Scraping Básico)</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Obtener datos de páginas web de forma automatizada.</p>
+                            <strong>Qué aprenderás:</strong> `requests`, `BeautifulSoup4`, selección de elementos HTML.
+                            <p><strong>Entregable esperado:</strong> Script `scraper_citas.py` para `quotes.toscrape.com`.</p>
+                            <div class="practice-area">
+                                <label for="f33_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f33_notes"></textarea>
+                                <label for="f33_code">Mi Código de Práctica:</label>
+                                <textarea id="f33_code" placeholder="import requests\nfrom bs4 import BeautifulSoup\n\nurl = 'http://quotes.toscrape.com/'\nresponse = requests.get(url)\nsoup = BeautifulSoup(response.text, 'html.parser')"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 3.4 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Feature 3.4: Automatizador de Tareas del Sistema</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Escribir scripts que interactúen con el sistema operativo.</p>
+                            <strong>Qué aprenderás:</strong> Módulos `os` y `shutil`.
+                            <p><strong>Entregable esperado:</strong> Script `organizador_descargas.py`.</p>
+                            <div class="practice-area">
+                                <label for="f34_notes">Mis Notas / Ejemplos:</label>
+                                <textarea id="f34_notes"></textarea>
+                                <label for="f34_code">Mi Código de Práctica:</label>
+                                <textarea id="f34_code" placeholder="import os\nimport shutil\n\n# os.makedirs('nueva_carpeta', exist_ok=True)\n# shutil.move('archivo.txt', 'nueva_carpeta/archivo.txt')"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NIVEL 4 -->
+            <div class="level-card">
+                <div class="level-header">
+                    <h3>Nivel 4: Sistema Especializado - Profesionalización</h3>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="level-content">
+                    <p>En este nivel, eliges una o varias "suites de features" para especializar tu sistema. El contenido detallado de cada feature se explorará a medida que avanzas en tu especialización seleccionada.</p>
+                    
+                    <!-- Suite 4.A -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Suite de Features 4.A: Backend Robusto y Escalable</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Desarrollar aplicaciones backend avanzadas y listas para producción.</p>
+                            <strong>Features Clave:</strong>
+                            <ul>
+                                <li><strong>4.A.1:</strong> Persistencia Profesional (Bases de Datos con SQLAlchemy)</li>
+                                <li><strong>4.A.2:</strong> Seguridad de API (Autenticación y Autorización con OAuth2/JWT)</li>
+                                <li><strong>4.A.3:</strong> Desarrollo Asíncrono con FastAPI (`async`/`await`)</li>
+                                <li><strong>4.A.4:</strong> Despliegue con Docker y Uvicorn/Gunicorn</li>
+                                <li><strong>4.A.5:</strong> Introducción a Microservicios y Caching (Redis)</li>
+                            </ul>
+                            <p><strong>Entregable Típico:</strong> API completa con autenticación, BD relacional, desplegada en Docker.</p>
+                            <div class="practice-area">
+                                <label for="f4A_notes">Mis Notas / Ideas de Proyecto Backend:</label>
+                                <textarea id="f4A_notes" placeholder="Ej: API para una red social, e-commerce, sistema de reservas..."></textarea>
+                                <label for="f4A_code">Fragmentos de Código Relevantes (SQLAlchemy, JWT, Dockerfile):</label>
+                                <textarea id="f4A_code" placeholder="# Modelos SQLAlchemy\n# Lógica de tokens JWT\n# Comandos Docker"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suite 4.B -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Suite de Features 4.B: Inteligencia Artificial y Ciencia de Datos</h4>
+                            <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Aplicar Python para análisis de datos, machine learning y IA.</p>
+                            <strong>Features Clave:</strong>
+                            <ul>
+                                <li><strong>4.B.1:</strong> Manipulación y Análisis de Datos (NumPy y Pandas)</li>
+                                <li><strong>4.B.2:</strong> Visualización de Datos (Matplotlib y Seaborn)</li>
+                                <li><strong>4.B.3:</strong> Machine Learning Aplicado (Scikit-learn: regresión, clasificación)</li>
+                                <li><strong>4.B.4:</strong> Introducción al Deep Learning (TensorFlow o PyTorch)</li>
+                                <li><strong>4.B.5:</strong> Procesamiento de Lenguaje Natural (NLP) básico</li>
+                            </ul>
+                            <p><strong>Entregable Típico:</strong> Modelo predictivo (ej: clasificación de spam), análisis de sentimiento, dashboard interactivo.</p>
+                             <div class="practice-area">
+                                <label for="f4B_notes">Mis Notas / Ideas de Proyecto IA/CD:</label>
+                                <textarea id="f4B_notes" placeholder="Ej: Analizar datos de ventas, predecir precios de acciones, clasificar imágenes..."></textarea>
+                                <label for="f4B_code">Fragmentos de Código Relevantes (Pandas, Scikit-learn):</label>
+                                <textarea id="f4B_code" placeholder="import pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# df = pd.read_csv(...)\n# model.fit(X_train, y_train)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Suite 4.C -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <h4>Suite de Features 4.C: Web Scraping y Automatización Avanzada</h4>
+                             <i class="fas fa-chevron-down toggle-icon-feature"></i>
+                        </div>
+                        <div class="feature-content">
+                            <p><strong>Descripción:</strong> Dominar técnicas avanzadas para extracción de datos web y automatización compleja.</p>
+                             <strong>Features Clave:</strong>
+                            <ul>
+                                <li><strong>4.C.1:</strong> Scraping Dinámico con Selenium (interacción con JavaScript)</li>
+                                <li><strong>4.C.2:</strong> Framework Scrapy para scraping a gran escala</li>
+                                <li><strong>4.C.3:</strong> Manejo de proxies, CAPTCHAs (con ética) y user-agents</li>
+                                <li><strong>4.C.4:</strong> Automatización de infraestructura con Ansible (Python-based)</li>
+                                <li><strong>4.C.5:</strong> Interacción con APIs de servicios en la nube (Boto3 para AWS)</li>
+                            </ul>
+                            <p><strong>Entregable Típico:</strong> Scraper robusto para sitios complejos, scripts de Ansible para configurar servidores.</p>
+                             <div class="practice-area">
+                                <label for="f4C_notes">Mis Notas / Ideas de Proyecto Scraping/Automatización:</label>
+                                <textarea id="f4C_notes" placeholder="Ej: Monitor de precios de productos, agregador de noticias, script de despliegue automático..."></textarea>
+                                <label for="f4C_code">Fragmentos de Código Relevantes (Selenium, Scrapy, Ansible):</label>
+                                <textarea id="f4C_code" placeholder="from selenium import webdriver\n\n# driver = webdriver.Chrome()\n# driver.get('...')"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Instructor Section -->
+    <section id="instructor" class="instructor">
+        <div class="container">
+            <h2>Conoce a tu Instructor (Simulado)</h2>
+            <img src="https://via.placeholder.com/150/0056D2/FFFFFF?Text=Instructor" alt="Instructor del curso">
+            <h3>Dr. Alex Pythonista</h3>
+            <p>Con más de 10 años de experiencia desarrollando con Python en diversas industrias, desde startups hasta grandes corporaciones, el Dr. Pythonista es un apasionado de la enseñanza y de compartir el poder de Python. Ha contribuido a proyectos open-source y es un ponente frecuente en conferencias de tecnología.</p>
+            <p><em>"Mi objetivo es llevarte de no saber nada de Python a ser un desarrollador competente y seguro, capaz de construir aplicaciones reales y resolver problemas complejos."</em></p>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section id="enroll" class="cta-section">
+        <div class="container">
+            <h2>¿Listo para Transformar tu Carrera con Python?</h2>
+            <p>Únete a cientos de estudiantes que ya están construyendo su futuro con el lenguaje de programación más demandado. Acceso de por vida, proyectos prácticos y una comunidad de aprendizaje.</p>
+            <a href="#" class="btn btn-lg btn-secondary">Inscríbete Ahora por $XX.XX</a>
+            <p style="font-size: 0.9em; margin-top:15px;">(Precio de ejemplo. Este es un curso simulado)</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="currentYear"></span> Python Pro Learning. Todos los derechos reservados (simulado).</p>
+            <p>Diseñado con <i class="fas fa-heart" style="color: red;"></i> para tu aprendizaje.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Accordion for Levels
+            const levelHeaders = document.querySelectorAll('.level-header');
+            levelHeaders.forEach(header => {
+                header.addEventListener('click', function () {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.maxHeight && content.style.maxHeight !== "0px") {
+                        content.style.maxHeight = "0px";
+                        content.style.paddingTop = "0px";
+                        content.style.paddingBottom = "0px";
+                    } else {
+                        // Set max-height to scrollHeight for smooth opening
+                        // Add a bit of extra space if needed, or calculate more precisely
+                        content.style.maxHeight = content.scrollHeight + 40 + "px"; 
+                        content.style.paddingTop = "20px";
+                        content.style.paddingBottom = "20px";
+                    }
+                });
+            });
+
+            // Accordion for Features
+            const featureHeaders = document.querySelectorAll('.feature-header');
+            featureHeaders.forEach(header => {
+                header.addEventListener('click', function (event) {
+                    // Stop propagation to prevent level accordion from closing if feature is inside
+                    event.stopPropagation(); 
+                    
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    const parentLevelContent = this.closest('.level-content');
+
+                    if (content.style.maxHeight && content.style.maxHeight !== "0px") {
+                        content.style.maxHeight = "0px";
+                        content.style.paddingTop = "0px";
+                        content.style.paddingBottom = "0px";
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 30 + "px";
+                        content.style.paddingTop = "15px";
+                        content.style.paddingBottom = "15px";
+                    }
+
+                    // Adjust parent level content height if it's open
+                    if (parentLevelContent && parentLevelContent.classList.contains('active')) {
+                         // Timeout to allow feature content to expand/collapse before recalculating parent
+                        setTimeout(() => {
+                            parentLevelContent.style.maxHeight = parentLevelContent.scrollHeight + 40 + "px";
+                        }, 410); // A bit more than feature transition
+                    }
+                });
+            });
+            
+            // Smooth scroll for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    // Ensure target element exists
+                    if (targetId.length > 1 && document.querySelector(targetId)) {
+                         document.querySelector(targetId).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    } else if (targetId === "#") {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Set current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Auto-open first level for demonstration
+            if (levelHeaders.length > 0) {
+                // levelHeaders[0].click(); // Simula un click para abrirlo
+                // Si quieres que el primer nivel esté abierto por defecto sin simular click:
+                const firstLevelHeader = levelHeaders[0];
+                const firstLevelContent = firstLevelHeader.nextElementSibling;
+                firstLevelHeader.classList.add('active');
+                firstLevelContent.classList.add('active'); // Add active class for styling
+                firstLevelContent.style.maxHeight = firstLevelContent.scrollHeight + 40 + "px";
+                firstLevelContent.style.paddingTop = "20px";
+                firstLevelContent.style.paddingBottom = "20px";
+            }
+        });
+    </script>
+
+</body>
+</html>
